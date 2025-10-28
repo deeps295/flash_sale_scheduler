@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flash Sales</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<header class="bg-white shadow">
+  <div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
+    <a href="/admin" class="text-sm text-blue-600">← Back</a>
+    <h1 class="text-xl font-bold">Flash Sales</h1>
+    <span></span>
+  </div>
+</header>
+<main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+  <section class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold mb-4">Create Sale</h2>
+    <form method="post" action="/admin/sales" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <input name="name" placeholder="Name" required class="border rounded px-3 py-2" />
+      <input name="start" type="datetime-local" required class="border rounded px-3 py-2" />
+      <input name="end" type="datetime-local" required class="border rounded px-3 py-2" />
+      <select name="active" class="border rounded px-3 py-2">
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
+      </select>
+      <div class="md:col-span-4">
+        <button class="bg-blue-600 text-white px-4 py-2 rounded">Create</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold mb-4">Sales</h2>
+    <div class="space-y-6">
+      <div th:each="s : ${sales}" class="border rounded p-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="font-semibold" th:text="${s.name}">Sale</div>
+            <div class="text-sm text-gray-500" th:text="${#temporals.format(s.startTime, 'dd MMM HH:mm')} + ' - ' + ${#temporals.format(s.endTime, 'dd MMM HH:mm')}">Time</div>
+          </div>
+          <a th:href="@{'/sale/' + ${s.id}}" class="text-blue-600">View</a>
+        </div>
+
+        <form class="mt-4 grid grid-cols-1 md:grid-cols-5 gap-3" method="post" th:action="@{'/admin/sales/' + ${s.id} + '/items'}">
+          <select name="productId" class="border rounded px-3 py-2" required>
+            <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}">Product</option>
+          </select>
+          <input type="number" step="0.01" name="discountPrice" placeholder="Discount Price" class="border rounded px-3 py-2" required />
+          <input type="number" name="quantityLimit" placeholder="Per-order limit (optional)" class="border rounded px-3 py-2" />
+          <div class="md:col-span-2">
+            <button class="bg-green-600 text-white px-4 py-2 rounded">Add Item</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
